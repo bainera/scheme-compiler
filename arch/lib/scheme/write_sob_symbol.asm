@@ -1,0 +1,49 @@
+ WRITE_SOB_SYMBOL:
+ PUSH(FP);
+ MOV(FP,SP);
+ PUSH(R1);
+ PUSH(R2);
+ PUSH(R3);
+ PUSH(R4);
+
+ MOV(R1,FPARG(0));
+ MOV(R3,R1);
+
+ CMP (INDD(R1,1),IMM(0));
+ JUMP_EQ(HAVE_NO_BUCKET);
+
+ MOV(R1,INDD(R1,1));
+ MOV(R2,IND(R1));
+ PUSH(R2);
+ JUMP (WRITING);
+
+ HAVE_NO_BUCKET:
+
+ START_LABEL: 
+ CMP(IND(R3),T_STRING) ; // r3 holds the pointer to the symbol
+
+
+
+ JUMP_EQ(END_LABEL) ;
+ DECR(R3) ;
+ JUMP(START_LABEL) ;
+ END_LABEL:
+
+
+  //MOV(R4,INDD(R3,2));
+  //ADD(R4,IMM(32));
+  //MOV (INDD(R3,2),R4);
+
+  PUSH(R3);
+
+ WRITING:
+  CALL (WRITE_SOB_STRING_SYMBOL);
+  DROP(1);
+
+BYE:
+ POP(R4);
+  POP(R3);
+ POP(R2);
+ POP(R1);
+ POP(FP);
+  RETURN;

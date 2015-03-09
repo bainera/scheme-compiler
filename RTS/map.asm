@@ -1,0 +1,96 @@
+
+MAP_BODY:
+PUSH(FP);
+MOV(FP,SP);
+PUSH(R1);
+PUSH(R2);
+PUSH(R3);
+PUSH(R4);
+PUSH(R5);
+
+MOV(R4,FPARG(1));
+DECR(R4); // num of args which is not function!
+CMP(R4,IMM(2));
+JUMP_NE(MAP_ONLY_ONE_LIST);
+MOV(R4,FPARG(4)); //second list
+
+MOV(R1,FPARG(3)); // FIRST LIST
+MOV(R2,FPARG(2)); // F = procedure
+MOV(R0,IMM(2)); // RO = '()
+
+CMP(R1,IMM(2));
+JUMP_EQ(MAP_END);
+CMP(R5,IMM(2));
+JUMP_EQ(MAP_END);
+
+MOV(R3,INDD(R1,2));
+MOV(R5,INDD(R4,2));
+PUSH(R5);
+PUSH(R3); //CDR LST
+PUSH(R2); //F
+PUSH(IMM(3)); //NUM OF ARGS
+PUSH(IMM(404)); // FAKE ENV
+CALL(MAP_BODY);
+DROP(5);
+
+PUSH(R0); // R0 = MAP( F (CDR LST))
+
+MOV(R4,INDD(R4,1));
+MOV(R1,INDD(R1,1));
+PUSH(R1); // R1 = CAR LST
+PUSH(R4); // R1 = CAR LST
+PUSH(2);
+MOV(R3,INDD(R2,1));
+PUSH(R3);
+MOV(R3,INDD(R2,2));
+CALLA(R3);
+DROP(4);
+
+PUSH(R0); //R0 = (F (CAR LIST))
+PUSH(IMM(2)); //num of args
+PUSH(414); //fake env
+CALL(CONS_BODY);
+DROP(4);
+JUMP(MAP_END);
+
+MAP_ONLY_ONE_LIST:
+MOV(R1,FPARG(3)); // FIRST LIST
+MOV(R2,FPARG(2)); // F = procedure
+MOV(R0,IMM(2)); // RO = '()
+
+CMP(R1,IMM(2));
+JUMP_EQ(MAP_END);
+
+MOV(R3,INDD(R1,2));
+PUSH(R3); //CDR LST
+PUSH(R2); //F
+PUSH(IMM(2)); //NUM OF ARGS
+PUSH(IMM(404)); // FAKE ENV
+CALL(MAP_BODY);
+DROP(4);
+
+PUSH(R0); // R0 = MAP( F (CDR LST))
+
+MOV(R1,INDD(R1,1));
+PUSH(R1); // R1 = CAR LST
+PUSH(1);
+MOV(R3,INDD(R2,1));
+PUSH(R3);
+MOV(R3,INDD(R2,2));
+CALLA(R3);
+DROP(3);
+
+PUSH(R0); //R0 = (F (CAR LIST))
+PUSH(IMM(2)); //num of args
+PUSH(414); //fake env
+CALL(CONS_BODY);
+DROP(4);
+
+MAP_END:
+POP(R5);
+POP(R4);
+POP(R3);
+POP(R2);
+POP(R1);
+POP(FP);
+RETURN; 
